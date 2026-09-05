@@ -1,5 +1,3 @@
-#define JOB_SLOT_RANDOMISED_SLOT -1
-#define JOB_SLOT_CURRENT_SLOT 0
 #define JOB_SLOT_RANDOMISED_TEXT "Случайное имя и внешность"
 #define JOB_SLOT_CURRENT_TEXT "Текущий слот"
 
@@ -29,6 +27,40 @@
 			slot_options[num2text(index)] = slot_name
 
 	return slot_options += list(num2text(JOB_SLOT_RANDOMISED_SLOT) = JOB_SLOT_RANDOMISED_TEXT)
+
+/datum/preferences/proc/get_job_assigned_name(datum/job/job_or_title)
+	var/title = istext(job_or_title) ? job_or_title : job_or_title?.title
+	var/current_name = read_preference(/datum/preference/name/real_name)
+
+	if(read_preference(/datum/preference/toggle/round_start_always_join_current_slot))
+		return current_name
+
+	var/raw_slot = job_assigned_profiles?[title]
+	if(isnull(raw_slot) && !istext(job_or_title))
+		raw_slot = job_assigned_profiles?[job_or_title] || job_assigned_profiles?[job_or_title?.type]
+
+	var/target_slot = isnum(raw_slot) ? raw_slot : text2num(raw_slot)
+
+	if(isnull(target_slot) || target_slot == JOB_SLOT_CURRENT_SLOT)
+		return current_name
+
+	if(target_slot == JOB_SLOT_RANDOMISED_SLOT)
+		return "a mysterious"
+
+	if(target_slot == default_slot)
+		return current_name
+
+	if(savefile)
+		var/list/save_data = savefile.get_entry("character[target_slot]")
+		if(islist(save_data))
+			if(save_data["real_name"])
+				return save_data["real_name"]
+
+			var/datum/preference/name_pref = GLOB.preference_entries[/datum/preference/name/real_name]
+			if(name_pref && save_data[name_pref.savefile_key])
+				return save_data[name_pref.savefile_key]
+
+	return current_name
 
 /// Resets pref_job_slots to empty list and saves preferences
 /datum/preferences/proc/reset_job_slots()

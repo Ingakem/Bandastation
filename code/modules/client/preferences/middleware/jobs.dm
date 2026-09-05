@@ -24,6 +24,10 @@
 
 	preferences.character_preview_view?.update_body()
 
+	// SS220 EDIT ADDITION START
+	if(!SSticker.HasRoundStarted())
+		SEND_SIGNAL(user, COMSIG_JOB_PREF_UPDATED)
+	// SS220 EDIT ADDITION END
 	return TRUE
 
 /datum/preference_middleware/jobs/proc/set_job_to_profile(list/params, mob/user)

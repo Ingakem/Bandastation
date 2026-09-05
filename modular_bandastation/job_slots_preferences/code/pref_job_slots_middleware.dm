@@ -7,7 +7,7 @@
 /datum/preference_middleware/pref_job_slots/get_ui_data(mob/user)
 	var/list/data = list()
 
-	data["pref_job_slots"] = preferences.pref_job_slots
+	data["pref_job_slots"] = preferences.job_assigned_profiles
 	data["profile_index"] = preferences.get_slot_options()
 
 	return data
@@ -19,23 +19,26 @@
 	var/job_title = params["job"]
 	var/slot_index = params["slot"]
 
-	if(JOB_SLOT_RANDOMISED_SLOT > slot_index > preferences.max_save_slots)
+	if(istext(slot_index))
+		slot_index = text2num(slot_index)
+
+	if(slot_index < JOB_SLOT_RANDOMISED_SLOT || slot_index > preferences.max_save_slots)
 		CRASH("Invalid slot index [slot_index] for job [job_title] in job slot update request")
 
 	if(!SSjob.get_job(job_title))
 		CRASH("Invalid job title [job_title] in job slot update request")
 
+	LAZYINITLIST(preferences.job_assigned_profiles)
+
 	if(slot_index == JOB_SLOT_CURRENT_SLOT)
-		preferences.pref_job_slots.Remove(job_title)
+		preferences.job_assigned_profiles -= job_title
 	else
-		preferences.pref_job_slots[job_title] = slot_index
+		preferences.job_assigned_profiles[job_title] = slot_index
 
 	preferences.save_preferences()
 	return TRUE
 
 /datum/preference_middleware/pref_job_slots/proc/reset_job_slots(list/params, mob/user)
-	preferences.reset_job_slots()
+	preferences.job_assigned_profiles = list()
+	preferences.save_preferences()
 	return TRUE
-
-#undef JOB_SLOT_RANDOMISED_SLOT
-#undef JOB_SLOT_CURRENT_SLOT

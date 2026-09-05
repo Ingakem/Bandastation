@@ -1,6 +1,7 @@
 #include "_jobs.dm"
 
 #include "code/controller/subsystem/job.dm"
+#include "code/job_expectations.dm"
 
 // NT Representation department
 #include "code/departments/nt_representation.dm"

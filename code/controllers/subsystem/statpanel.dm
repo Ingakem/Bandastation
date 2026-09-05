@@ -42,6 +42,10 @@ SUBSYSTEM_DEF(statpanels)
 			"Time Dilation: [round(SStime_track.time_dilation_current,1)]% AVG:([round(SStime_track.time_dilation_avg_fast,1)]%, [round(SStime_track.time_dilation_avg,1)]%, [round(SStime_track.time_dilation_avg_slow,1)]%)",
 		)
 
+		// SS220 EDIT ADDITION START
+		if(length(SSstatpanels.player_ready_data) || length(SSstatpanels.command_player_ready_data))
+			global_data += SSstatpanels.get_job_estimation()
+		// SS220 EDIT ADDITION END
 		if(SSshuttle.emergency)
 			var/ETA = SSshuttle.emergency.getModeStr()
 			if(ETA)

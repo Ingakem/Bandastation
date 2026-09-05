@@ -282,8 +282,14 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	key_bindings = sanitize_keybindings(key_bindings)
 	favorite_outfits = SANITIZE_LIST(favorite_outfits)
 	job_assigned_profiles = SANITIZE_LIST(job_assigned_profiles)
-	for(var/job, slot in job_assigned_profiles)
-		if(!isnum(slot) || slot < 1 || slot > max_save_slots)
+	for(var/job in job_assigned_profiles)
+		var/slot = job_assigned_profiles[job]
+		if(istext(slot))
+			slot = text2num(slot)
+			job_assigned_profiles[job] = slot
+
+		// Разрешаем рандом (-1) и слоты от 1 до max_save_slots
+		if(!isnum(slot) || slot < JOB_SLOT_RANDOMISED_SLOT || slot > max_save_slots || slot == JOB_SLOT_CURRENT_SLOT)
 			job_assigned_profiles -= job
 
 	key_bindings_by_key = get_key_bindings_by_key(key_bindings)

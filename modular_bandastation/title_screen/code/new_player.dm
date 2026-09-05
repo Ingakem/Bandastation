@@ -49,6 +49,7 @@
 		if(ready != PLAYER_NOT_READY)
 			ready = PLAYER_NOT_READY
 			SStitle.title_output(client, FALSE, "toggleReady")
+			SSstatpanels.remove_job_estimation(src)
 			return
 
 		var/prefs_specie = client.prefs.read_preference(/datum/preference/choiced/species)
@@ -68,6 +69,7 @@
 						return
 
 		ready = PLAYER_READY_TO_PLAY
+		SSstatpanels.add_job_estimation(src)
 		SStitle.title_output(client, TRUE, "toggleReady")
 
 	else if(href_list["late_join"])
